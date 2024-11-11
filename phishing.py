@@ -12,17 +12,22 @@ import re
 import nltk
 
 # Download and access dataset from online kaggle api
-path = kagglehub.dataset_download("wcukierski/enron-email-dataset")
+import kagglehub
+
+path = kagglehub.dataset_download("shantanudhakadd/email-spam-detection-dataset-classification")
 print("Path to dataset files:", path)
 
 # Set up dataset path
-dataset_path = f"{path}/emails.csv" 
+dataset_path = f"{path}/spam.csv" 
 
 # Load dataset
-data = pd.read_csv(dataset_path)
+data = pd.read_csv(dataset_path, encoding='ISO-8859-1')
+
 
 # Inspect dataset
+print("Columns in new dataset:", data.columns)
 print(data.head())
+
 
 # Data Preprocessing
 nltk.download('stopwords')
@@ -44,12 +49,12 @@ def preprocess_text(text):
     return ' '.join(tokens)
 
 # Apply preprocessing to email body column to create new column 'processed_text'
-data['processed_text'] = data['message'].apply(preprocess_text)
+data['processed_text'] = data['v2'].apply(preprocess_text)  
 
 # Feature Engineering with TF-IDF
 tfidf_vectorizer = TfidfVectorizer(max_features=3000)
 X = tfidf_vectorizer.fit_transform(data['processed_text']).toarray()
-y = data['label'].apply(lambda x: 1 if x == 'phishing' else 0)  # Binary classification
+y = data['v1'].apply(lambda x: 1 if x == 'spam' else 0)  # Convert 'spam' to 1 and 'ham' to 0
 
 # Split dataset into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
