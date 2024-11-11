@@ -4,12 +4,12 @@ This project is designed to detect phishing emails by analyzing the text content
 
 ## Challenges
 
-Coming into this project, I faced a few challenges that I needed to address. First, I had limited experience with NLP and text preprocessing, so understanding how to clean and prepare raw email data was initially overwhelming. Additionally, working with a dataset from Kaggle presented its own challenges, including learning how to download and load the dataset properly within my environment. I also needed to familiarize myself with evaluation metrics like precision, recall, and F1-score, as I had mainly worked with accuracy in previous projects. Lastly, understanding how to use TF-IDF for feature extraction was a new concept that took some time to grasp.
+Coming into this project, I faced a few challenges that I needed to address. First, I had limited experience with NLP and text preprocessing, so understanding how to clean and prepare raw email data was initially overwhelming. I also needed to familiarize myself with evaluation metrics like precision, recall, and F1-score. Lastly, understanding how to use TF-IDF for feature extraction was a new concept that took some time to grasp.
 
 ## Project Structure
 
 1. **Set Up the Environment**: Install Python and essential libraries.
-2. **Gather the Dataset**: Use a dataset containing phishing and non-phishing emails (such as the Enron Email Dataset).
+2. **Gather the Dataset**: Use a dataset containing phishing and non-phishing emails (in this case the Enron Email Dataset).
 3. **Data Preprocessing**: Clean and preprocess the email text data.
 4. **Feature Engineering**: Transform text data into numerical features that the model can process.
 5. **Model Training**: Train a machine learning model to classify emails.
@@ -31,8 +31,10 @@ pip install pandas numpy scikit-learn nltk kagglehub
 2. NumPy: For handling numerical operations.
 3. Scikit-learn: For machine learning algorithms, data splitting, and model evaluation.
 4. NLTK (Natural Language Toolkit): For text processing, tokenization, and removing stopwords.
+    - Stopwords: common words that typically do not carry significant meaning (i.e. 'the', 'in' 'is')
+    - punkt: downloads the tokenizer models which helps split text into words or sentences based on standard english
 4. KaggleHub: For downloading datasets from Kaggle directly into the project.
-5. Jupyter Notebook: For interactive coding and visualizing steps (optional).
+5. Jupyter Notebook: For interactive coding and visualizing steps.
 
 ### 2. Downloading and Accessing the Dataset
 The dataset is downloaded using the kagglehub library. We specify the Enron Email Dataset and print out the path to where the dataset is saved on the system.
@@ -75,7 +77,7 @@ data['processed_text'] = data['message'].apply(preprocess_text)
 ```
 
 ### 6. Feature Engineering
-We convert the processed text data into numerical features using TF-IDF (Term Frequency-Inverse Document Frequency), limiting it to the top 3000 features for simplicity. This transforms the text into a format that the model can work with.
+We convert the processed text data into numerical features using TF-IDF (Term Frequency-Inverse Document Frequency), limiting it to the top 3000 features for simplicity. This transforms the text into a format that the model can work with. TF_IFG converts text into numerical values representing the importance of words in the text. The labels (y) are also transformed into binary values for classification.
 
 ```
 python
@@ -85,6 +87,13 @@ tfidf_vectorizer = TfidfVectorizer(max_features=3000)
 X = tfidf_vectorizer.fit_transform(data['processed_text']).toarray()
 y = data['label'].apply(lambda x: 1 if x == 'phishing' else 0)  # Convert labels to binary
 ```
+
+The lambda functions operates as follows:
+1. For each label x in the label column:
+2. If x is equal to 'phishing', it returns 1.
+    - Otherwise (if x is not 'phishing', like 'not phishing'), it returns 0.
+This effectively converts any 'phishing' label to 1 and any other label to 0.
+Y is now a binary representation of the label column where 1 represents phishing emails and 0 non-phishing emails. This binary classification prepares y to be used as a target variable in a ML model.
 
 ### 7. Splitting the Dataset
 We split the dataset into training and testing sets, with 80% for training and 20% for testing. This helps evaluate the model's performance on unseen data.
@@ -97,7 +106,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 ```
 
 ### 8. Model Training
-We use a Naive Bayes classifier, which is effective for text classification tasks. The model is trained on the training data.
+We use a Naive Bayes classifier, which is effective for text classification tasks and perfect for identifying phishing emails. The model is trained on the training data.
 
 ```
 python
@@ -131,6 +140,14 @@ print(f"F1 Score: {f1:.2f}")
 
 ## What I Learned
 Through this project, I learned how to preprocess text data for NLP tasks, including steps like tokenization, stopword removal, and lowercasing, which are crucial for cleaning raw text data. Working with TF-IDF taught me how to transform text into numerical features that machine learning models can understand, which was eye-opening. I also gained a deeper understanding of model evaluation metrics beyond accuracy, such as precision, recall, and F1-score, and how each metric is valuable in understanding the performance of a classification model. Finally, I learned how to use libraries like NLTK and scikit-learn together to build an end-to-end machine learning pipeline for text classification, which has given me more confidence in my ability to work on similar NLP projects in the future.
+
+1. Python re.sub(): search, replace, and manipulate strings based on specific patterns
+    - re.sub(pattern, replacement, string)
+    - i.e. `text = re.sub(r'\W', ' ', text)
+        - \W matche any non-word character 
+        - removes any symbols or special characters 
+    - the r before a string makes it a raw string, telling python to treat \ as literal characters
+
 
 # Conclusion
 This project guides you through the end-to-end process of building a phishing email detection model, from data preprocessing to model training and evaluation. By following these steps, you can understand the basics of text classification, feature engineering with TF-IDF, and model evaluation using essential metrics.

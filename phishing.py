@@ -11,12 +11,12 @@ from nltk.tokenize import word_tokenize
 import re
 import nltk
 
-# Download and access dataset
+# Download and access dataset from online kaggle api
 path = kagglehub.dataset_download("wcukierski/enron-email-dataset")
 print("Path to dataset files:", path)
 
-# Set up dataset path (adjust as needed)
-dataset_path = f"{path}/emails.csv"  # Replace with actual file name
+# Set up dataset path
+dataset_path = f"{path}/emails.csv" 
 
 # Load dataset
 data = pd.read_csv(dataset_path)
@@ -27,6 +27,8 @@ print(data.head())
 # Data Preprocessing
 nltk.download('stopwords')
 nltk.download('punkt')
+
+# Assigns all stop words to a set for easy lookup
 stop_words = set(stopwords.words('english'))
 
 def preprocess_text(text):
@@ -41,7 +43,7 @@ def preprocess_text(text):
     tokens = [word for word in tokens if word not in stop_words]
     return ' '.join(tokens)
 
-# Apply preprocessing to email body column (adjust column name if different)
+# Apply preprocessing to email body column to create new column 'processed_text'
 data['processed_text'] = data['message'].apply(preprocess_text)
 
 # Feature Engineering with TF-IDF
@@ -52,7 +54,7 @@ y = data['label'].apply(lambda x: 1 if x == 'phishing' else 0)  # Binary classif
 # Split dataset into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Model Training
+# Model Training with multinomial naive bayes model
 model = MultinomialNB()
 model.fit(X_train, y_train)
 
