@@ -9,7 +9,7 @@ Coming into this project, I faced a few challenges that I needed to address. Fir
 ## Project Structure
 
 1. **Set Up the Environment**: Install Python and essential libraries.
-2. **Gather the Dataset**: Use a dataset containing phishing and non-phishing emails (in this case the Enron Email Dataset).
+2. **Gather the Dataset**: Use a dataset containing phishing and non-phishing emails (in this case the Spam vs Ham dataset).
 3. **Data Preprocessing**: Clean and preprocess the email text data.
 4. **Feature Engineering**: Transform text data into numerical features that the model can process.
 5. **Model Training**: Train a machine learning model to classify emails.
@@ -37,11 +37,11 @@ pip install pandas numpy scikit-learn nltk kagglehub
 5. Jupyter Notebook: For interactive coding and visualizing steps.
 
 ### 2. Downloading and Accessing the Dataset
-The dataset is downloaded using the kagglehub library. We specify the Enron Email Dataset and print out the path to where the dataset is saved on the system.
+The dataset is downloaded using the kagglehub library. We specify the spam vs ham dataset and print out the path to where the dataset is saved on the system.
 
 ```python
 import kagglehub
-path = kagglehub.dataset_download("wcukierski/enron-email-dataset")
+path = kagglehub.dataset_download("shantanudhakadd/email-spam-detection-dataset-classification")
 print("Path to dataset files:", path)
 ```
 
