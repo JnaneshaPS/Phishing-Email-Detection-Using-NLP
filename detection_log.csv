@@ -1,0 +1,3 @@
+timestamp,subject,classification,confidence
+2025-05-24T12:27:49.320733,[URGENT] Account Access Restricted,Legitimate,50.0%
+2025-05-25T07:59:18.253482,URGENT: Your PayPal account has been limited,Legitimate,62.0%
