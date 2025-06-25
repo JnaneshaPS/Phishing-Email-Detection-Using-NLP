@@ -222,13 +222,32 @@ def load_phishing_dataset():
     try:
         print("Downloading phishing dataset...")
         # Try to download a more phishing-focused dataset
-        path = kagglehub.dataset_download("shantanudhakadd/email-spam-detection-dataset-classification")
-        dataset_path = f"{path}/spam.csv"
-        
-        # Load base dataset
-        data = pd.read_csv(dataset_path, encoding='ISO-8859-1')
-        data = data.rename(columns={data.columns[0]: 'label', data.columns[1]: 'text'})
-        print(f"Loaded {len(data)} emails from dataset")
+        try:
+            path = kagglehub.dataset_download("shantanudhakadd/email-spam-detection-dataset-classification")
+            dataset_path = f"{path}/spam.csv"
+            
+            # Load base dataset
+            data = pd.read_csv(dataset_path, encoding='ISO-8859-1')
+            data = data.rename(columns={data.columns[0]: 'label', data.columns[1]: 'text'})
+            print(f"Loaded {len(data)} emails from dataset")
+        except Exception as e:
+            print(f"Could not load main dataset: {e}")
+            # Create a fallback minimal dataset if main dataset fails
+            fallback_data = {
+                'text': [
+                    "Hello, how are you?",
+                    "URGENT: Your PayPal account has been suspended. Click here to verify: http://bit.ly/paypal-verify",
+                    "Meeting at 2pm tomorrow",
+                    "Dear customer, your Amazon account needs verification. Please login at http://amaz0n-secure.com",
+                    "Your order has been shipped and will arrive tomorrow",
+                    "Congratulations! You've won a free iPhone. Click here to claim: http://free-iphone-winner.com",
+                    "The meeting has been moved to 3pm instead of 2pm",
+                    "ALERT: Your Microsoft account has been compromised. Reset your password at http://microsoft-secure.net"
+                ],
+                'label': ['ham', 'spam', 'ham', 'spam', 'ham', 'spam', 'ham', 'spam']
+            }
+            data = pd.DataFrame(fallback_data)
+            print("Using fallback dataset with 8 examples")
         
         # Try to augment with phishing examples if available
         try:
@@ -243,11 +262,12 @@ def load_phishing_dataset():
                 print(f"Augmented with {len(phishing_data)} additional phishing examples")
         except Exception as e:
             print(f"Could not load additional phishing data: {e}")
+            print("Continuing with base dataset only")
             
         return data
     except Exception as e:
-        print(f"Error loading dataset: {e}")
-        # Create a fallback minimal dataset
+        print(f"Error in dataset loading process: {e}")
+        # Create a minimal fallback dataset as last resort
         fallback_data = {
             'text': [
                 "Hello, how are you?",

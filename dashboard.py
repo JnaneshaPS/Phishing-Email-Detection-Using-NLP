@@ -692,12 +692,18 @@ def main():
                 subject = analysis_result.get('subject', email_subject)
                 
                 # Display the analysis result
-                if is_phishing:
+                confidence_percentage = probability*100 if is_phishing else (1-probability)*100
+                
+                # If confidence is below 70%, treat as uncertain/not legitimate
+                if confidence_percentage < 70:
+                    st.markdown(f"<div class='phishing-alert'><h2>⚠️ UNCERTAIN CLASSIFICATION</h2>" 
+                                f"<p>Confidence too low ({confidence_percentage:.1f}%) - Email not considered legitimate</p></div>", unsafe_allow_html=True)
+                elif is_phishing:
                     st.markdown(f"<div class='phishing-alert'><h2>⚠️ PHISHING DETECTED</h2>" 
-                                f"<p>Confidence: {probability*100:.1f}%</p></div>", unsafe_allow_html=True)
+                                f"<p>Confidence: {confidence_percentage:.1f}%</p></div>", unsafe_allow_html=True)
                 else:
                     st.markdown(f"<div class='safe-alert'><h2>✅ LEGITIMATE EMAIL</h2>" 
-                                f"<p>Confidence: {(1-probability)*100:.1f}%</p></div>", unsafe_allow_html=True)
+                                f"<p>Confidence: {confidence_percentage:.1f}%</p></div>", unsafe_allow_html=True)
                 
                 # Log the detection
                 detection_log = {
@@ -729,13 +735,13 @@ def main():
                     # Add high-risk features
                     for name, value in features.items():
                         if name in ['URLs count', 'URL shorteners', 'Misleading domains'] and value > 0:
-                            risk_items.append(f"🔗 **{name}**: {value}")
+                            risk_items.append(f"URL: **{name}**: {value}")
                         elif name in ['Urgent language', 'Action verbs'] and value > 2:
-                            risk_items.append(f"⚡ **{name}**: {value} instances")
+                            risk_items.append(f"Language: **{name}**: {value} instances")
                         elif name in ['Sensitive requests'] and value > 0:
-                            risk_items.append(f"🔒 **{name}**: {value} instances")
+                            risk_items.append(f"Security: **{name}**: {value} instances")
                         elif name in ['From/Reply-To mismatch', 'Misspelled companies', 'Suspicious sender'] and value > 0:
-                            risk_items.append(f"👤 **{name}**: Detected")
+                            risk_items.append(f"Sender: **{name}**: Detected")
                     
                     if risk_items:
                         for item in risk_items:
